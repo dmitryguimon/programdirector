@@ -45,7 +45,7 @@ class ProgramDirector:
                 print(t,c)
             return 1
         term = self.terms[(starting_term_i + n_terms_filled) % len(self.terms)]
-        print("\t"*n_terms_filled + term["id"])
+        #print("\t"*n_terms_filled + term["id"])
         if term["id"] in offerings:
             courses_offered = offerings[term["id"]]
         else:
@@ -55,22 +55,25 @@ class ProgramDirector:
             need_course = need_to_take[j]                
             if (need_course["id"] in courses_offered) and (self.meet_prereqs(plan, need_course)):
                  courses_fit.append(need_course["id"])                    
-        options = combinations(courses_fit, max_n_courses_per_term)
-         
+        #check combination for less courses
+        courses_per_term = max_n_courses_per_term
         feasible_new_plan = 0
         feasible_new_new_need_to_take = 0
-        for c in options:
-            list_c = list(c)
-            plan_this_term = [(term, list_c)]               
-            new_plan = plan + plan_this_term
-            new_need_to_take = self.subtract_courses(need_to_take, list_c)
-            #print("testing", int(len(new_plan)/len(self.terms)), new_plan[-1])
-            if self.test_schedule_rec (new_plan, new_need_to_take , offerings, n_terms_filled +1, terms_to_graduate - 1, starting_term_i, max_n_courses_per_term):
-                feasible_new_plan = new_plan
-                feasible_new_need_to_take = new_need_to_take
+        while(courses_per_term >= 0 and feasible_new_plan == 0):            
+            options = combinations(courses_fit, courses_per_term)            
+            for c in options:
+                list_c = list(c)
+                plan_this_term = [(term, list_c)]               
+                new_plan = plan + plan_this_term
+                new_need_to_take = self.subtract_courses(need_to_take, list_c)
+                #print("testing", int(len(new_plan)/len(self.terms)), new_plan[-1])
+                if self.test_schedule_rec (new_plan, new_need_to_take , offerings, n_terms_filled +1, terms_to_graduate - 1, starting_term_i, max_n_courses_per_term):
+                    feasible_new_plan = new_plan
+                    feasible_new_need_to_take = new_need_to_take                    
+                    break
+            courses_per_term = courses_per_term - 1
                 
-                break
-       
+           
         if feasible_new_plan == 0:            
             return 0
         #if len(feasible_new_plan) > len(self.longest):
