@@ -56,7 +56,7 @@ class ProgramDirector:
             if (need_course["id"] in courses_offered) and (self.meet_prereqs(plan, need_course)):
                  courses_fit.append(need_course["id"])                    
         options = combinations(courses_fit, max_n_courses_per_term)
-        
+         
         feasible_new_plan = 0
         feasible_new_new_need_to_take = 0
         for c in options:
